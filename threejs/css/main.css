@@ -1,0 +1,41 @@
+html, body{
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  background-image:-moz-radial-gradient(1045px 1045px, #fff 10px, #ababab 800px);
+  background-image:-o-radial-gradient(1045px 1045px, #fff 10px, #ababab 800px);
+  background-image:-webkit-radial-gradient(1045px 1045px, #fff 10px, #ababab 800px);
+  background-image:radial-gradient(1045px 1045px, #ffffff 10px,#ababab 800px);
+}
+
+.data-container{
+  display:none;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-left:-235px;
+  margin-top:-182px;
+  z-index:1;
+}
+.submit{
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+  position:absolute;
+  z-index:1;
+  cursor:pointer;
+  padding:10px 20px;
+  top:50%; left:50%;
+  margin-left:-45px;
+  margin-top:200px;
+  background:white;
+  color:black;
+}
+.submit:hover{
+  background:black;
+  color:white;
+}
+
+canvas{
+  position:relative;
+  z-index:0;
+}
