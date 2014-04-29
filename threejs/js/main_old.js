@@ -28,19 +28,24 @@ $(document).ready(function(){
 
 
   function createView(){
-    var posX = 0, posY = 0, posZ = 0, lastPos = new THREE.Vector3();
     _.each(data.coordinates, function(coord, i){
       var scale = 10;
       var geometry = new THREE.CubeGeometry(scale,scale,scale);
       var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
       var cube = new THREE.Mesh( geometry, material );
 
+      //coord.loc.z += (i * 20);
 
-      posX += (coord.locDiff.x / 500);
-      posY += (coord.locDiff.y / 500);
-      posZ += (coord.locDiff.z / 500);
-
-      var thisPos = new THREE.Vector3(posX, posY, posZ);
+      // set x,y,z position
+      cube.position.x = coord.loc.x;
+      cube.position.y = coord.loc.y;
+      cube.position.z = coord.loc.z;
+      // set rotation
+      var vector = new THREE.Vector3( 0, 0, 0 );
+      vector.applyQuaternion( coord.quat );
+      cube.rotation.x = vector.x;
+      cube.rotation.y = vector.y;
+      cube.rotation.z = vector.z;
 
       if(i > 0){
         // draw line
@@ -48,15 +53,12 @@ $(document).ready(function(){
             color: 0x000000
         });
         var lineGeom = new THREE.Geometry();
-        lineGeom.vertices.push(lastPos);
-        lineGeom.vertices.push(thisPos);
+        lineGeom.vertices.push(data.coordinates[i - 1].loc);
+        lineGeom.vertices.push(coord.loc);
         var line = new THREE.Line(lineGeom, lineMat);
 
         group.add( line );
       }
-
-      lastPos = thisPos;
-
       group.add( cube );
     });
   }
