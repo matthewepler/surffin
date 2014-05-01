@@ -10,84 +10,41 @@ Surf.Data.prototype.parseData = function(data) {
   var rows = data.split('+');
   var prevTime = 0;
   var prevLoc = new THREE.Vector3(0, 0, 0);
+  var currLoc = new THREE.Vector3(0, 0, 0);
   this.coordinates = [];
   for(var i = 1; i < rows.length; i++){
     var c = new Surf.Coordinate();
     var vals = rows[i].split(',');
     var timestamp = parseInt(vals[0], 10);
     var deltaTime = timestamp - prevTime;
-
-    // gyro data
-    // var rotX = parseFloat(vals[4]);
-    // var rotY = parseFloat(vals[5]);
-    // var rotZ = parseFloat(vals[6]);
-    // c.quat = new THREE.Quaternion().setFromEuler(new THREE.Euler(rotX, rotY, rotZ));
-
     var x = parseFloat(vals[1]);
     var y = parseFloat(vals[2]);
     var z = parseFloat(vals[3]);
 
-    c.loc.x = x;
-    c.loc.y = y;
-    c.loc.z = z;
 
     c.locDiff.x = x + prevLoc.x;
     c.locDiff.y = y + prevLoc.y;
     c.locDiff.z = z + prevLoc.z;
 
-    //console.log(rows[i] + ' : ' + timestamp, x, y, z);
-
-    // // accelerometer data
-    // c.force = {};
-    // c.force.x = parseInt(vals[1], 10) / deltaTime;
-    // c.force.z = parseInt(vals[2], 10) / deltaTime;
-    // c.force.y = parseInt((parseInt(vals[3], 10)/ deltaTime), 10);
-
-    // // calculate position
-    // c.accel = c.force;
-    // c.vel.add(c.accel);
-    // c.loc.add(c.vel);
+    currLoc = currLoc.add(new THREE.Vector3(c.locDiff.x / 500, c.locDiff.y / 500, c.locDiff.z / 500));
+    c.loc = currLoc.clone();
 
     this.coordinates.push(c);
 
     prevLoc = c.loc;
     prevTime = timestamp;
   }
+
+  var locations = _.pluck(this.coordinates, 'loc');
+
+  // trim down locations
+  var newLocs = [];
+  _.each(locations, function(loc, i){
+    if(i % 10 === 0){
+      newLocs.push(loc);
+    }
+  });
+  this.splineCurve = new THREE.SplineCurve3(newLocs);
+
 };
-
-
-
-// Surf.Data.prototype.parseData = function(data) {
-//   var rows = data.split('+');
-//   var prevTime = 0;
-//   this.coordinates = [];
-//   for(var i = 0; i < rows.length; i++){
-//     var c = new Surf.Coordinate();
-//     var vals = rows[i].split(',');
-//     var timestamp = parseInt(vals[7], 10);
-//     var deltaTime = timestamp - prevTime;
-
-//     // gyro data
-//     var rotX = parseFloat(vals[4]);
-//     var rotY = parseFloat(vals[5]);
-//     var rotZ = parseFloat(vals[6]);
-//     c.quat = new THREE.Quaternion().setFromEuler(new THREE.Euler(rotX, rotY, rotZ));
-
-//     // accelerometer data
-//     c.force = {};
-//     c.force.x = parseInt(vals[1], 10) / deltaTime;
-//     c.force.z = parseInt(vals[2], 10) / deltaTime;
-//     c.force.y = parseInt((parseInt(vals[3], 10)/ deltaTime), 10);
-
-//     // calculate position
-//     c.accel = c.force;
-//     c.vel.add(c.accel);
-//     c.loc.add(c.vel);
-
-//     this.coordinates.push(c);
-
-//     prevLoc = c.loc;
-//     prevTime = timestamp;
-//   }
-// };
 
